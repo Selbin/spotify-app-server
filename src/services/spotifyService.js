@@ -30,7 +30,7 @@ const authorizeSpotify = async (delaySeconds = 900) => {
             if (response.ok) {
                 const data = await response.json();
                 const accessToken = data.access_token;
-                logger.info('spotify token updated')
+                logger.info('spotify token updated');
                 return await SpotifyModel.updateOne({}, { $set: { accessToken } }, { upsert: true });
             } else {
                 logger.error('Failed to authorize with Spotify:', response.status, response.statusText);
@@ -70,6 +70,8 @@ const getProfileById = async (id, delaySeconds = 15) => {
         await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
         await authorizeSpotify();
         return await getProfileById(id);
+    } else {
+        return null;
     }
 };
 
@@ -94,6 +96,8 @@ const getPlaylistsById = async (id, delaySeconds = 15) => {
         await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
         await authorizeSpotify();
         return await getPlaylistsById(id);
+    } else {
+        return [];
     }
 };
 
