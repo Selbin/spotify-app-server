@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 
 import dbConnect from './database/db.js';
 import userRouter from './routes/user.js';
-import { authorizeSpotify, checkSpotifyTokenExist } from './services/spotifyService.js';
+import spotifyRouter from './routes/spotify.js'
+import spotifyService from './services/spotifyService.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -15,9 +16,9 @@ const init = async () => {
     // 2. Check spotify token exists
     // 3. If token doesn't exist authorize spotify
     await dbConnect();
-    const tokenExists = await checkSpotifyTokenExist();
-    if (!tokenExists) {
-        authorizeSpotify();
+    const token = await spotifyService.getSpotifyToken();
+    if (!token) {
+        spotifyService.authorizeSpotify();
     }
 };
 
@@ -27,7 +28,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/user', userRouter);
-app.use(errorHandler)
+app.use('/spotify', spotifyRouter);
+app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
 

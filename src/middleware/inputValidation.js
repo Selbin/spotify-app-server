@@ -7,7 +7,10 @@ export const registrationValidationRules = [
     body('confirmPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ];
 
-export const loginValidationRules = [body('email').isEmail().withMessage('Invalid email address'), body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')];
+export const loginValidationRules = [
+    body('email').isEmail().withMessage('Invalid email address'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+];
 
 export const validationMiddleware = (req, res, next) => {
     const errors = validationResult(req);
@@ -16,3 +19,8 @@ export const validationMiddleware = (req, res, next) => {
     }
     next();
 };
+
+export const refreshTokenValidation = [
+    body('email').isEmail().withMessage('Invalid email address'),
+    body('refreshToken').notEmpty().withMessage('Invalid Token')
+];
