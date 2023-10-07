@@ -13,5 +13,6 @@ const router = express.Router();
 router.post('/register', registrationValidationRules, validationMiddleware, userController.register);
 router.post('/login', loginValidationRules, validationMiddleware, userController.login);
 router.post('/refresh', refreshTokenValidation, validationMiddleware, userController.refreshAccessToken);
+router.post('/check-jwt', userController.verifyAccessToken);
 
 export default router;

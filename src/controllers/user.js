@@ -12,7 +12,7 @@ const register = async (req, res, next) => {
         }
 
         const { accessToken, refreshToken } = await userService.register({ email, name, password, confirmPassword });
-        res.status(200).json({ accessToken, refreshToken });
+        res.status(200).json({ accessToken, refreshToken, email });
     } catch (error) {
         if (error.code === 11000) {
             next(new Error('Email is already in use'));
@@ -28,7 +28,7 @@ const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const { accessToken, refreshToken } = await userService.login({ email, password });
-        res.status(200).json({ accessToken, refreshToken });
+        res.status(200).json({ accessToken, refreshToken, email });
     } catch (error) {
         next(error);
     }
@@ -40,7 +40,7 @@ const refreshAccessToken = async (req, res) => {
     // 3. Returns access token if sucessfull or return an error message
     try {
         const { email, refreshToken } = req.body;
-        const accessToken = userService.refreshToken({ email, refreshToken });
+        const accessToken = await userService.refreshToken({ email, refreshToken });
         if (!accessToken) {
             return res.status(401).json({ message: 'invalid token' });
         }
@@ -50,8 +50,25 @@ const refreshAccessToken = async (req, res) => {
     }
 };
 
+const verifyAccessToken = async (req, res, next) => {
+    // 1. Get accessToken from body
+    // 2. Call verifyAccessToken service
+    // 3. Returns ture if sucessfull else return false
+    try {
+        const { accessToken } = req.body;
+        if (!accessToken) {
+            return res.status(200).json({ isValid: false });
+        }
+        const isValid = await userService.verifyAccessToken(accessToken);
+        return res.status(200).json({ isValid });
+    } catch (error) {
+        return res.status(200).json({ isValid: false });
+    }
+};
+
 export default {
     register,
     login,
-    refreshAccessToken
+    refreshAccessToken,
+    verifyAccessToken
 };

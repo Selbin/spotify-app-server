@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import User from '../model/user.js';
-import { verifyRefreshToken } from '../utils/helper.js';
+import { verifyToken } from '../utils/helper.js';
 
 const register = async ({ email, name, password }) => {
     // 1. Hash the password
@@ -44,7 +44,7 @@ const refreshToken = async ({ email, refreshToken }) => {
     //  2.1 If not valid return false
     //  2.2 If valid return access token
     const user = await User.findOne({ email });
-    const isValid = verifyRefreshToken({ email, refreshToken, refreshSecret: user.refreshTokenKey });
+    const isValid = verifyToken({ email, token: refreshToken, secret: user.refreshTokenKey });
     if (!isValid) {
         return false;
     }
@@ -56,4 +56,15 @@ const refreshToken = async ({ email, refreshToken }) => {
     return accessToken;
 };
 
-export default { register, login, refreshToken };
+const verifyAccessToken = async (token) => {
+    // 1. Decode access token
+    // 2. Get user for fetch access token secret key
+    // 3. Calls verifyToken
+    // 4. Return valid or not
+    const decodedValue = jwt.decode(token);
+    const user = await User.findOne({ email: decodedValue.email });
+    const isValid = verifyToken({ email: decodedValue.email, token, secret: user.accessTokenKey });
+    return isValid;
+};
+
+export default { register, login, refreshToken, verifyAccessToken };
