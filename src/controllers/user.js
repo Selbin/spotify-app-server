@@ -1,5 +1,4 @@
 import userService from '../services/userService.js';
-import { verifyRefreshToken } from '../utils/helper.js';
 
 const register = async (req, res, next) => {
     try {
@@ -25,19 +24,13 @@ const login = async (req, res, next) => {
     }
 };
 
-const refreshAccessToken = (req, res) => {
+const refreshAccessToken = async (req, res) => {
     try {
         const { email, refreshToken } = req.body;
-        const isValid = verifyRefreshToken(email, refreshToken);
-        if (!isValid) {
-            return res.status(401).json({ message: 'Invalid token, try login again' });
+        const accessToken = userService.refreshToken({ email, refreshToken });
+        if (!accessToken) {
+            return res.status(401).json({ message: 'invalid token' });
         }
-
-        const jwtSecret = process.env.JWT_SECRET;
-        const accessToken = jwt.sign({ email: email }, jwtSecret, {
-            expiresIn: '3h'
-        });
-
         return res.status(200).json({ accessToken });
     } catch (error) {
         return res.status(401).json({ message: 'invalid token' });

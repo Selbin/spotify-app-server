@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-export const verifyRefreshToken = (email, token) => {
+export const verifyRefreshToken = ({ email, token, refreshSecret }) => {
     try {
-        const refreshSecretKey = process.env.REFRESH_SECRET;
-        const decodedValue = jwt.verify(token, refreshSecretKey);
+        const decodedValue = jwt.verify(token, refreshSecret);
         return decodedValue.email === email;
     } catch (error) {
         return false;
