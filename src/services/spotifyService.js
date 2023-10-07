@@ -6,23 +6,24 @@ dotEnv.config();
 
 const spotifyUrl = process.env.SPOTIFY_URL;
 const authorizeSpotify = async (delaySeconds = 900) => {
+    // 1. Get spotify Token by hitting the spotify api
+    // 2. Save to DB
+    // 3. If spotify service is down continously retry with an interval
     const { CLIENT_ID: clientId, CLIENT_SECRET: clientSecret } = process.env;
     const clientToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
     const body = new URLSearchParams();
     body.append('grant_type', 'client_credentials');
-    // 1. Get spotify Token
-    // 2. Save to DB
-    // 3. If spotify service is down continously retry with an interval
     while (true) {
         try {
-            const response = await fetch(`${process.env.SPOTIFY_AUTH_URL}/api/token`, {
+            const options = {
                 method: 'POST',
                 headers: {
                     Authorization: `Basic ${clientToken}`,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: body
-            });
+            };
+            const response = await fetch(`${process.env.SPOTIFY_AUTH_URL}/api/token`, options);
 
             if (response.ok) {
                 const data = await response.json();
@@ -40,10 +41,16 @@ const authorizeSpotify = async (delaySeconds = 900) => {
 };
 
 const getSpotifyToken = async () => {
+    // To get spotify access token from db
     return await SpotifyModel.findOne({ name: 'spotifyKey' });
 };
 
-const getProfileById = async (id) => {
+const getProfileById = async (id, delaySeconds = 15) => {
+    //1. Fetch the access token for spotify
+    //2. Fetch user profile by id
+    //3. If response status is 401 ie unauthorised
+    // 3.1 Fetch and update spotify access token
+    // 3.2 Call the getProfileById again. These happens with a given delay
     const spotify = await SpotifyModel.findOne({ name: 'spotifyKey' });
     const headers = {
         Authorization: 'Bearer ' + spotify.accessToken
@@ -56,31 +63,34 @@ const getProfileById = async (id) => {
     if (response.ok) {
         const user = await response.json();
         return user;
-    } else {
+    } else if (response.status === 401) {
         await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
         await authorizeSpotify();
-        return await getPlaylistsById(id);
+        return await getProfileById(id);
     }
 };
 
 const getPlaylistsById = async (id, delaySeconds = 15) => {
-    while (true) {
-        const spotify = await SpotifyModel.findOne({ name: 'spotifyKey' });
-        const headers = {
-            Authorization: 'Bearer ' + spotify.accessToken
-        };
-        const options = {
-            headers: headers
-        };
-        const response = await fetch(`${spotifyUrl}/v1/users/${id}/playlists`, options);
-        if (response.ok) {
-            const playlists = await response.json();
-            return playlists;
-        } else if (response.status === 401) {
-            await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
-            await authorizeSpotify();
-            return await getPlaylistsById(id);
-        }
+    //1. Fetch the access token for spotify
+    //2. Fetch playlist by id
+    //3. If response status is 401 ie unauthorised
+    // 3.1 Fetch and update spotify access token
+    // 3.2 Call the getPlaylistsById again. These happens with a given delay
+    const spotify = await SpotifyModel.findOne({ name: 'spotifyKey' });
+    const headers = {
+        Authorization: 'Bearer ' + spotify.accessToken
+    };
+    const options = {
+        headers: headers
+    };
+    const response = await fetch(`${spotifyUrl}/v1/users/${id}/playlists`, options);
+    if (response.ok) {
+        const playlists = await response.json();
+        return playlists;
+    } else if (response.status === 401) {
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+        await authorizeSpotify();
+        return await getPlaylistsById(id);
     }
 };
 

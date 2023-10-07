@@ -1,6 +1,10 @@
 import userService from '../services/userService.js';
 
 const register = async (req, res, next) => {
+    // 1. Get user details from body
+    // 2. Check if passwords match
+    // 3. Call user register service
+    // 4. return token received from register service
     try {
         const { email, name, password, confirmPassword } = req.body;
         if (password !== confirmPassword) {
@@ -18,6 +22,9 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+    // 1. Get credentials from body
+    // 2. Call user login service
+    // 4. return token received from login service
     try {
         const { email, password } = req.body;
         const { accessToken, refreshToken } = await userService.login({ email, password });
@@ -28,6 +35,9 @@ const login = async (req, res, next) => {
 };
 
 const refreshAccessToken = async (req, res) => {
+    // 1. Get email and refresh token from body
+    // 2. Call refresh token service
+    // 3. Returns access token if sucessfull or return an error message
     try {
         const { email, refreshToken } = req.body;
         const accessToken = userService.refreshToken({ email, refreshToken });
