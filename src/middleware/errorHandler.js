@@ -8,6 +8,6 @@ export const errorHandler = (err, req, res, next) => {
         return res.status(422).json({ message: err.message });
     } else {
         logger.error(err)
-        return res.status(500).json({ message: 'Unknown error occurred' });
+        return res.status(500).json({ message: 'Something went wrong' });
     }
 };

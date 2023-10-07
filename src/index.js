@@ -1,10 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import swaggerUI from 'swagger-ui-express';
+import yaml from 'yamljs';
 
 import dbConnect from './database/db.js';
 import userRouter from './routes/user.js';
-import spotifyRouter from './routes/spotify.js'
+import spotifyRouter from './routes/spotify.js';
 import logger from './logger/logger.js';
 import spotifyService from './services/spotifyService.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -25,11 +27,16 @@ const init = async () => {
 
 init();
 
+// Load swagger yaml file
+const swaggerDocument = yaml.load('./swagger.yaml');
+
 app.use(cors());
 app.use(express.json());
 
 app.use('/user', userRouter);
 app.use('/spotify', spotifyRouter);
+// serves API docs
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
