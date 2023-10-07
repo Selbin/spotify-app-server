@@ -39,7 +39,7 @@ app.use('/spotify', spotifyRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.listen(port, () => {
     logger.info(`listening on port ${port}`);
