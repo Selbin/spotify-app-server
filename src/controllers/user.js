@@ -10,6 +10,9 @@ const register = async (req, res, next) => {
         const { accessToken, refreshToken } = await userService.register({ email, name, password, confirmPassword });
         res.status(200).json({ accessToken, refreshToken });
     } catch (error) {
+        if (error.code === 11000) {
+            next(new Error('Email is already in use'));
+        }
         next(error);
     }
 };

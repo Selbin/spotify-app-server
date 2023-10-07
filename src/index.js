@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import dbConnect from './database/db.js';
 import userRouter from './routes/user.js';
 import { authorizeSpotify, checkSpotifyTokenExist } from './services/spotifyService.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 dotenv.config();
@@ -26,6 +27,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/user', userRouter);
+app.use(errorHandler)
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
