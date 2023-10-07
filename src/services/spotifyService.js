@@ -1,6 +1,8 @@
 import dotEnv from 'dotenv';
 import fetch from 'node-fetch';
+
 import SpotifyModel from '../model/spotify.js';
+import logger from '../logger/logger.js';
 
 dotEnv.config();
 
@@ -28,13 +30,14 @@ const authorizeSpotify = async (delaySeconds = 900) => {
             if (response.ok) {
                 const data = await response.json();
                 const accessToken = data.access_token;
+                logger.info('spotify token updated')
                 return await SpotifyModel.updateOne({}, { $set: { accessToken } }, { upsert: true });
             } else {
-                console.error('Failed to authorize with Spotify:', response.status, response.statusText);
+                logger.error('Failed to authorize with Spotify:', response.status, response.statusText);
                 await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
             }
         } catch (error) {
-            console.error('An error occurred:', error);
+            logger.error('An error occurred:', error);
             await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
         }
     }

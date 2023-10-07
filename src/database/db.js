@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import logger from '../logger/logger.js';
+
 const dbConnect = async (retryInterval = 60000, maxRetries = 5) => {
     // 1. connect to database
     // 2. If connection fails, we try to retry for a specified limit within in a given interval of time
@@ -8,11 +10,11 @@ const dbConnect = async (retryInterval = 60000, maxRetries = 5) => {
             minPoolSize: 5
         });
     } catch (error) {
-        console.error('MongoDB connection error:', error.message);
+        logger.error('MongoDB connection error:', error.message);
         if (maxRetries > 0) {
             setTimeout(() => dbConnect(retryInterval, maxRetries - 1), retryInterval);
         } else {
-            console.error('Maximum number of retries reached');
+            logger.error('Maximum number of retries reached');
         }
     }
 };
@@ -20,16 +22,16 @@ const dbConnect = async (retryInterval = 60000, maxRetries = 5) => {
 const db = mongoose.connection;
 
 db.on('error', (error) => {
-    console.error(error);
+    logger.error(error);
 });
 
 db.on('reconnected', () => {
     //will automatically reconnect on disconnection after initial connection.
-    console.log('reconnected db ....');
+    logger.info('reconnected db ....');
 });
 
 db.once('open', () => {
-    console.log('Connected to MongoDB database');
+    logger.info('Connected to MongoDB database');
 });
 
 export default dbConnect;

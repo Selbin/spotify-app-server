@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import dbConnect from './database/db.js';
 import userRouter from './routes/user.js';
 import spotifyRouter from './routes/spotify.js'
+import logger from './logger/logger.js';
 import spotifyService from './services/spotifyService.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -34,5 +35,5 @@ app.use(errorHandler);
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log('listening on port', port);
+    logger.info(`listening on port ${port}`);
 });
