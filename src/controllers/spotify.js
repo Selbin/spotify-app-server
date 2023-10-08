@@ -18,8 +18,9 @@ const getPlaylist = async (req, res, next) => {
     // 2. Call getPlaylistsById from spotify service to get the playlists
     // 3. Return response with playlists
     try {
+        const { page = 1, limit = 5 } = req.query;
         const { id } = req.params;
-        const playlists = await spotifyService.getPlaylistsById(id);
+        const playlists = await spotifyService.getPlaylistsById({ id, page, limit });
         return res.status(200).json(playlists);
     } catch (error) {
         next(error);

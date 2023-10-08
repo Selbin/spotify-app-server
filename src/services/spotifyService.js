@@ -75,7 +75,7 @@ const getProfileById = async (id, delaySeconds = 15) => {
     }
 };
 
-const getPlaylistsById = async (id, delaySeconds = 15) => {
+const getPlaylistsById = async ({ id, page, limit, delaySeconds = 15 }) => {
     //1. Fetch the access token for spotify
     //2. Fetch playlist by id
     //3. If response status is 401 ie unauthorised
@@ -88,7 +88,10 @@ const getPlaylistsById = async (id, delaySeconds = 15) => {
     const options = {
         headers: headers
     };
-    const response = await fetch(`${spotifyUrl}/v1/users/${id}/playlists`, options);
+    const response = await fetch(
+        `${spotifyUrl}/v1/users/${id}/playlists?limit=${limit}&offset=${(page - 1) * limit}`,
+        options
+    );
     if (response.ok) {
         const playlists = await response.json();
         return playlists;
