@@ -100,7 +100,7 @@ const getPlaylistsById = async ({ id, page, limit, delaySeconds = 15 }) => {
         await authorizeSpotify();
         return await getPlaylistsById(id);
     } else {
-        return [];
+        return null;
     }
 };
 
