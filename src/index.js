@@ -16,7 +16,7 @@ dotenv.config();
 
 const init = async () => {
     // 1. initialize db
-    // 2. Check spotify token exists
+    // 2. Check spotify token exists in db
     // 3. If token doesn't exist authorize spotify
     await dbConnect();
     const token = await spotifyService.getSpotifyToken();

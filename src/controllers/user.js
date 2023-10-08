@@ -53,7 +53,7 @@ const refreshAccessToken = async (req, res) => {
 const verifyAccessToken = async (req, res, next) => {
     // 1. Get accessToken from body
     // 2. Call verifyAccessToken service
-    // 3. Returns ture if sucessfull else return false
+    // 3. Returns true if sucessfull else return false
     try {
         const { accessToken } = req.body;
         if (!accessToken) {
