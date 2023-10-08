@@ -10,7 +10,9 @@ const dbConnect = async (retryInterval = 10000) => {
             return await mongoose.connect(process.env.MONGODB_URI, {
                 minPoolSize: 5
             });
+
         } catch (error) {
+            logger.info('Retrying database connection')
             await new Promise((resolve) => setTimeout(resolve, retryInterval));
         }
     }
