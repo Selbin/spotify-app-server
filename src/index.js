@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import swaggerUI from 'swagger-ui-express';
 import yaml from 'yamljs';
 
+import apiLogger from './middleware/apiLogger.js';
 import dbConnect from './database/db.js';
 import userRouter from './routes/user.js';
 import spotifyRouter from './routes/spotify.js';
@@ -32,6 +33,7 @@ const swaggerDocument = yaml.load('./swagger.yaml');
 
 app.use(cors());
 app.use(express.json());
+app.use(apiLogger)
 
 app.use('/user', userRouter);
 app.use('/spotify', spotifyRouter);
