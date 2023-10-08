@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import logger from '../logger/logger.js';
 
 const dbConnect = async (retryInterval = 10000) => {
+    // 1. Try to connect to database
+    // 2. If fails retry after a given interval until success
     while (true) {
         try {
             return await mongoose.connect(process.env.MONGODB_URI, {
@@ -13,7 +15,6 @@ const dbConnect = async (retryInterval = 10000) => {
         }
     }
 };
-//conver to while
 
 const db = mongoose.connection;
 

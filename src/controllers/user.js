@@ -11,7 +11,7 @@ const register = async (req, res, next) => {
             return res.status(400).json({ message: "Passwords doesn't match" });
         }
 
-        const { accessToken, refreshToken } = await userService.register({ email, name, password, confirmPassword });
+        const { accessToken, refreshToken } = await userService.register({ email, name, password });
         res.status(200).json({ accessToken, refreshToken, email });
     } catch (error) {
         if (error.code === 11000) {
