@@ -98,7 +98,7 @@ const getPlaylistsById = async ({ id, page, limit, delaySeconds = 15 }) => {
     } else if (response.status === 401) {
         await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
         await authorizeSpotify();
-        return await getPlaylistsById(id);
+        return await getPlaylistsById({id, page, limit});
     } else {
         return null;
     }
