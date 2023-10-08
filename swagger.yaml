@@ -118,6 +118,11 @@ components:
       properties:
         accessToken:
           type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   "/spotify/user/{id}":
     get:
@@ -137,6 +142,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        '500':
+          description: Internal Server Error - Something went wrong
+      security:
+        - bearerAuth: []
   "/spotify/playlists/{id}":
     get:
       summary: Get user's Spotify playlists by id
@@ -157,6 +166,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Playlist"
+        '500':
+          description: Internal Server Error - Something went wrong
+      security:
+        - bearerAuth: []
   "/user/register":
     post:
       summary: User registration
@@ -183,6 +196,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Login"
+        '422':
+          description: "Email is already in use"
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    message: 
+                      type: string
+                      example: "Email is already in use"
+        '500':
+          description: Internal Server Error - Something went wrong
   "/user/login":
     post:
       summary: User Login
@@ -206,7 +231,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Login"
         '401':
-          description: Unauthorized - Invalid email or password
+          description: "Invalid email or password"
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    message: 
+                      type: string
+                      example: "Invalid email or password"
         '500':
           description: Internal Server Error - Something went wrong
   "/user/refresh":
@@ -226,8 +259,46 @@ paths:
                   type: string                  
       responses:
         '200':
-          description: Login successful
+          description: Token refreshed
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Refresh"
+        '401':
+          description: "invalid token"
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    message: 
+                      type: string
+                      example: "invalid token"
+        '500':
+          description: Internal Server Error - Something went wrong
+  "/user/check-jwt":
+    post:
+      summary: Verify access token
+      description: Verify access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string 
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isValid: 
+                    type: boolean
+        '500':
+          description: Internal Server Error - Something went wrong   
+
