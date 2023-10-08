@@ -5,7 +5,8 @@ import authenticateUser from '../middleware/userAuthentication.js';
 
 const router = express.Router();
 
-router.get('/user/:id', authenticateUser, spotifyController.getProfile);
-router.get('/playlists/:id', authenticateUser, spotifyController.getPlaylist);
+router.use(authenticateUser);
+router.get('/user/:id', spotifyController.getProfile);
+router.get('/playlists/:id', spotifyController.getPlaylist);
 
 export default router;
